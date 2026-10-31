@@ -7,8 +7,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 app.use(express.json({ limit: "100kb" }));
 app.get("/", (_req, res) => res.sendFile(path.join(__dirname, "public", "showcase", "index.html")));
-app.get("/notes", (_req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
-app.get("/showcase/little-notes-showcase-2026.pdf", (_req, res) => res.download(path.join(__dirname, "output", "pdf", "little-notes-showcase-2026.pdf")));
+app.get("/notes", (_req, res) => res.sendFile(path.join(__dirname, "public", "notes", "index.html")));
 app.use(express.static(path.join(__dirname, "public")));
 
 const noteSchema = new mongoose.Schema({
@@ -20,10 +19,24 @@ const noteSchema = new mongoose.Schema({
 const Note = mongoose.model("Note", noteSchema);
 
 function asyncRoute(fn) { return (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next); }
+let mongoConnectPromise = null;
+function connectMongo() {
+  if (mongoose.connection.readyState === 1) return Promise.resolve();
+  if (!process.env.MONGODB_URI) return Promise.reject(new Error("MONGODB_URI is missing"));
+  if (!mongoConnectPromise) {
+    mongoConnectPromise = mongoose.connect(process.env.MONGODB_URI, { serverSelectionTimeoutMS: 10000 })
+      .then(() => undefined)
+      .catch(error => { mongoConnectPromise = null; throw error; });
+  }
+  return mongoConnectPromise;
+}
 app.get("/api/health", (_req, res) => res.json({ connected: mongoose.connection.readyState === 1 }));
-app.use("/api/notes", (req, res, next) => {
-  if (mongoose.connection.readyState !== 1) return res.status(503).json({ error: "MongoDB is not connected yet" });
-  next();
+app.use("/api/notes", async (_req, res, next) => {
+  try { await connectMongo(); next(); }
+  catch (error) {
+    console.error("MongoDB connection failed:", error.message);
+    res.status(503).json({ error: "MongoDB is unavailable. Try again shortly." });
+  }
 });
 app.get("/api/notes", asyncRoute(async (_req, res) => {
   const notes = await Note.find().sort({ pinned: -1, updatedAt: -1 }).lean();
@@ -51,16 +64,15 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ error: "Something went wrong. Check the server connection." });
 });
 
-async function start() {
-  if (!process.env.MONGODB_URI) throw new Error("MONGODB_URI is missing. Add it to your .env file.");
+if (require.main === module) {
   app.listen(port, () => console.log(`Notepad is ready at http://localhost:${port}`));
-  const connectWithRetry = () => mongoose.connect(process.env.MONGODB_URI, { serverSelectionTimeoutMS: 10000 })
+  const connectWithRetry = () => connectMongo()
     .then(() => console.log("Connected to MongoDB Atlas"))
-    .catch(err => {
-      console.error("MongoDB connection failed; retrying in 15 seconds:", err.message);
-      const retry = setTimeout(connectWithRetry, 15000);
+    .catch(error => {
+      console.error("MongoDB connection failed; retrying in 30 seconds:", error.message);
+      const retry = setTimeout(connectWithRetry, 30000);
       retry.unref();
     });
   connectWithRetry();
 }
-start().catch(err => { console.error("Could not connect to MongoDB:", err.message); process.exit(1); });
+module.exports = app;
