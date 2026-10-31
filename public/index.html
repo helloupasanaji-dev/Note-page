@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#c49a22" />
+  <title>little notes — your notepad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#"><span class="brand-mark">✳</span><span>little notes<small>your thoughts, in one place</small></span></a>
+      <button class="new-note" id="newNote"><span>＋</span> New note <kbd>⌘ K</kbd></button>
+      <div class="nav-label">YOUR SPACE</div>
+      <button class="nav-item active" data-filter="all"><span>▤</span> All notes <span class="count" id="noteCount">0</span></button>
+      <button class="nav-item" data-filter="pinned"><span>⌑</span> Pinned</button>
+      <a class="nav-item showcase-nav" href="/showcase/">✳ Showcase</a>
+      <div class="sidebar-bottom"><div class="avatar">U</div><div><b>Your notebook</b><small>Saved to your space</small></div><span class="more">···</span></div>
+    </aside>
+    <main class="main">
+      <header class="topbar"><div class="breadcrumb">Your space <span>/</span> <b id="currentView">All notes</b></div><div class="top-actions"><div class="connection"><i id="connectionDot"></i><span id="connectionText">Connecting…</span></div><button class="icon-button" aria-label="Settings">⚙</button></div></header>
+      <section class="workspace">
+        <div class="heading-row"><div><div class="eyebrow">A LITTLE SPACE FOR YOUR MIND</div><h1 id="pageTitle">All notes<span class="period">.</span></h1><p class="subtitle">Keep the little things from slipping away.</p></div><button class="primary-button" id="newNoteTop"><span>＋</span> New note</button></div>
+        <div class="toolbar"><label class="search"><span>⌕</span><input id="search" type="search" placeholder="Search your notes…" /><kbd>⌘ F</kbd></label><div class="sort-label">Recently edited <span>⌄</span></div></div>
+        <div id="notesGrid" class="notes-grid"></div>
+        <div id="emptyState" class="empty-state" hidden><div class="empty-icon">✎</div><h2 id="emptyTitle">A fresh page.</h2><p id="emptyMessage">Start with a thought, a plan, or a little reminder.</p><button class="primary-button" id="emptyNew">＋ Create your first note</button></div>
+      </section>
+      <footer class="site-footer"><span class="footer-message">Made for the things you don’t want to forget.</span><span class="footer-brand"><span class="footer-mark">✳</span><span class="footer-name">little notes</span><span class="footer-divider"></span><span class="footer-caption">your thoughts, in one place</span></span></footer>
+    </main>
+  </div>
+  <div class="modal-backdrop" id="editorBackdrop" hidden><section class="editor" role="dialog" aria-modal="true" aria-label="Edit note"><header class="editor-bar"><span class="editor-status"><i></i> <span id="saveStatus">All changes saved</span></span><div class="editor-tools"><button id="pinNote" class="tool-button" title="Pin note">⌑ <span>Pin</span></button><button id="deleteNote" class="tool-button delete-tool" title="Delete note">⌫ <span>Delete</span></button><button id="saveNote" class="save-button">Save note</button><button id="closeEditor" class="close-button" aria-label="Close">×</button></div></header><div class="color-picker" id="colorPicker"><span>NOTE COLOR</span><button data-color="cream" class="swatch cream selected" aria-label="Cream"></button><button data-color="sage" class="swatch sage" aria-label="Sage"></button><button data-color="rose" class="swatch rose" aria-label="Rose"></button><button data-color="sky" class="swatch sky" aria-label="Sky"></button><button data-color="lavender" class="swatch lavender" aria-label="Lavender"></button></div><input id="noteTitle" class="title-input" maxlength="120" placeholder="Untitled note" /><textarea id="noteContent" class="content-input" placeholder="Start writing…"></textarea><div class="editor-footer"><span id="wordCount">0 words</span><span id="saveHint">Autosaves as you write</span></div></section></div>
+  <script src="/app.js"></script>
+</body>
+</html>
