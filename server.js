@@ -7,10 +7,10 @@ const app = express();
 const port = process.env.PORT || 3000;
 app.use(express.json({ limit: "100kb" }));
 const showcasePage = path.join(__dirname, "public", "showcase", "index.html");
-const notesPage = path.join(__dirname, "public", "notes", "index.html");
+const notesPage = path.join(__dirname, "public", "notes.html");
 app.get("/", (_req, res) => res.sendFile(showcasePage));
 app.get(["/showcase", "/showcase/", "/showcase/index.html"], (_req, res) => res.sendFile(showcasePage));
-app.get(["/notes", "/notes/", "/notes/index.html"], (_req, res) => res.sendFile(notesPage));
+app.get(["/notes", "/notes/", "/notes.html", "/notes/index.html"], (_req, res) => res.sendFile(notesPage));
 app.use(express.static(path.join(__dirname, "public")));
 
 const noteSchema = new mongoose.Schema({
