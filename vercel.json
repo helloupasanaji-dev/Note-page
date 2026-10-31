@@ -7,7 +7,7 @@
   },
   "rewrites": [
     { "source": "/", "destination": "/showcase/" },
-    { "source": "/notes", "destination": "/notes/index.html" },
-    { "source": "/notes/", "destination": "/notes/index.html" }
+    { "source": "/notes", "destination": "/notes.html" },
+    { "source": "/notes/", "destination": "/notes.html" }
   ]
 }
